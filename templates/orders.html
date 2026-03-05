@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">
+    {% if admin_view %}All Customer Orders{% else %}My Order History{% endif %}
+</h2>
+
+{% if orders %}
+    <div class="accordion" id="ordersAccordion">
+    
+    {% for order in orders %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{ order.id }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ order.id }}">
+                    <strong>Order #{{ order.id }}</strong> &nbsp;|&nbsp; 
+                    {{ order.date.strftime('%Y-%m-%d %H:%M') }} &nbsp;|&nbsp; 
+                    <strong>{{ "%.2f"|format(order.total_price) }} SEK</strong> 
+                    <span class="badge bg-secondary ms-3">{{ order.status }}</span>
+                    
+                    {% if admin_view %}
+                        <span class="ms-auto text-primary">User: {{ order.user.email }}</span>
+                    {% endif %}
+                </button>
+            </h2>
+            
+            <div id="collapse{{ order.id }}" class="accordion-collapse collapse" data-bs-parent="#ordersAccordion">
+                <div class="accordion-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price at Purchase</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ "%.2f"|format(item.price_at_purchase) }} SEK</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ "%.2f"|format(item.price_at_purchase * item.quantity) }} SEK</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    
+    </div>
+{% else %}
+    <div class="alert alert-info">No orders found.</div>
+    {% if not admin_view %}
+        <a href="/products" class="btn btn-primary">Start Shopping</a>
+    {% endif %}
+{% endif %}
+
+{% endblock %}

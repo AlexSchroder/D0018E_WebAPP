@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if product %}
+    <h1 class="mb-3">Edit product</h1>
+    <form method="post" class="card p-3" action="/admin/products/{{ product.id }}/edit" style="max-width: 700px;">
+  {% else %}
+    <h1 class="mb-3">New product</h1>
+    <form method="post" class="card p-3" action="/admin/products/new" style="max-width: 700px;">
+  {% endif %}
+
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input class="form-control" name="name" required value="{{ product.name if product else '' }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Category</label>
+      <input class="form-control" name="category" value="{{ product.category if product else '' }}">
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Price</label>
+        <input class="form-control" name="price" required value="{{ product.price if product else '' }}">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Stock</label>
+        <input class="form-control" name="stock" required value="{{ product.stock if product else 0 }}">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Image Filename</label>
+      <input class="form-control" name="image_file" value="{{ product.image_file if product else 'default.jpg' }}" placeholder="e.g. protein.jpg">
+      
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea class="form-control" name="description" rows="3">{{ product.description if product else '' }}</textarea>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Save</button>
+    <a class="btn btn-link" href="/admin/products">Cancel</a>
+  </form>
+{% endblock %}
