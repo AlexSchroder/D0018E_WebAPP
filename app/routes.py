@@ -224,11 +224,15 @@ def admin_products_new_submit():
 
     try:
         price = Decimal(price_raw)
+        if price < 0: # SPÄRR FÖR MINUS-PRIS
+            return render_template("admin_product_form.html", product=None, error="Price cannot be negative")
     except (InvalidOperation, ValueError):
         return render_template("admin_product_form.html", product=None, error="Price must be a number")
 
     try:
         stock = int(stock_raw)
+        if stock < 0: # SPÄRR FÖR MINUS-LAGER
+            return render_template("admin_product_form.html", product=None, error="Stock cannot be negative")
     except ValueError:
         return render_template("admin_product_form.html", product=None, error="Stock must be an integer")
 
@@ -275,12 +279,18 @@ def admin_products_edit_submit(product_id: int):
     stock_raw = request.form.get("stock", "").strip()
 
     try:
-        product.price = Decimal(price_raw)
+        parsed_price = Decimal(price_raw)
+        if parsed_price < 0: # SPÄRR FÖR MINUS-PRIS
+            return render_template("admin_product_form.html", product=product, error="Price cannot be negative")
+        product.price = parsed_price
     except (InvalidOperation, ValueError):
         return render_template("admin_product_form.html", product=product, error="Price must be a number")
 
     try:
-        product.stock = int(stock_raw)
+        parsed_stock = int(stock_raw)
+        if parsed_stock < 0: # SPÄRR FÖR MINUS-LAGER
+            return render_template("admin_product_form.html", product=product, error="Stock cannot be negative")
+        product.stock = parsed_stock
     except ValueError:
         return render_template("admin_product_form.html", product=product, error="Stock must be an integer")
 

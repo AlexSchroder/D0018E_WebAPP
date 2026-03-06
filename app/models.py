@@ -30,23 +30,26 @@ class Product(db.Model):
     price = db.Column(db.Numeric(10, 2), nullable=False)
     stock = db.Column(db.Integer, default=0)
     image_file = db.Column(db.String(120), nullable=False, default='default.jpg')
+    
+    # RELATIONSHIP: Raderar automatiskt recensioner om produkten raderas
     reviews = db.relationship('Review', backref='product', lazy=True, cascade="all, delete-orphan")
 
-    # RELATIONSHIP: This allows us to see how many times a product has been ordered
-    order_items = db.relationship('OrderItem', backref='product', lazy=True)
+    # RELATIONSHIP: Raderar automatiskt orderrader om produkten raderas
+    order_items = db.relationship('OrderItem', backref='product', lazy=True, cascade="all, delete-orphan")
+    
     @property
     def average_rating(self):
         # If there are no reviews, return 0
         if not self.reviews:
             return 0.0
         
-        #Calculate sum of all ratings divided by the number of reviews
+        # Calculate sum of all ratings divided by the number of reviews
         total_stars = sum(review.rating for review in self.reviews)
         avg = total_stars / len(self.reviews)
         
         # Return it rounded to 1 decimal 
         return round(avg, 1)
-
+    
 class Order(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
